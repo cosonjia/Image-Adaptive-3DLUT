@@ -1,6 +1,8 @@
 #include "trilinear_kernel.h"
 #include <torch/extension.h>
-#include <THC/THC.h>
+/* #include <THC/THC.h> */
+#include <cuda_runtime_api.h>
+#include <c10/cuda/CUDAStream.h>
 
 int trilinear_forward_cuda(torch::Tensor lut, torch::Tensor image, torch::Tensor output,
                            int lut_dim, int shift, float binsize, int width, int height, int batch)
@@ -10,7 +12,7 @@ int trilinear_forward_cuda(torch::Tensor lut, torch::Tensor image, torch::Tensor
     float * image_flat = image.data<float>();
     float * output_flat = output.data<float>();
 
-    TriLinearForwardLaucher(lut_flat, image_flat, output_flat, lut_dim, shift, binsize, width, height, batch, at::cuda::getCurrentCUDAStream());
+    TriLinearForwardLaucher(lut_flat, image_flat, output_flat, lut_dim, shift, binsize, width, height, batch, c10::cuda::getCurrentCUDAStream());
 
     return 1;
 }
@@ -23,7 +25,7 @@ int trilinear_backward_cuda(torch::Tensor image, torch::Tensor image_grad, torch
     float * image_flat = image.data<float>();
     float * lut_grad_flat = lut_grad.data<float>();
 
-    TriLinearBackwardLaucher(image_flat, image_grad_flat, lut_grad_flat, lut_dim, shift, binsize, width, height, batch, at::cuda::getCurrentCUDAStream());
+    TriLinearBackwardLaucher(image_flat, image_grad_flat, lut_grad_flat, lut_dim, shift, binsize, width, height, batch, c10::cuda::getCurrentCUDAStream());
 
     return 1;
 }

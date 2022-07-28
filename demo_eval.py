@@ -5,7 +5,7 @@ import numpy as np
 import cv2
 from PIL import Image
 
-from models import *
+from models_x import *
 import torchvision_x_functional as TF_x
 import torchvision.transforms.functional as TF
 
