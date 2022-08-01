@@ -98,32 +98,33 @@ optimizer_D = torch.optim.Adam(discriminator.parameters(), lr=opt.lr, betas=(opt
 
 if opt.input_color_space == 'sRGB':
     dataloader = DataLoader(
-        ImageDataset_sRGB_unpaired("../data/%s" % opt.dataset_name, mode="train"),
+        ImageDataset_sRGB_unpaired("./data/%s" % opt.dataset_name, mode="train"),
         batch_size=opt.batch_size,
         shuffle=True,
         num_workers=opt.n_cpu,
     )
 
     psnr_dataloader = DataLoader(
-        ImageDataset_sRGB_unpaired("../data/%s" % opt.dataset_name,  mode="test"),
+        ImageDataset_sRGB_unpaired("./data/%s" % opt.dataset_name,  mode="test"),
         batch_size=1,
         shuffle=False,
         num_workers=1,
     )
 elif opt.input_color_space == 'XYZ':
     dataloader = DataLoader(
-        ImageDataset_XYZ_unpaired("../data/%s" % opt.dataset_name, mode="train"),
+        ImageDataset_XYZ_unpaired("./data/%s" % opt.dataset_name, mode="train"),
         batch_size=opt.batch_size,
         shuffle=True,
         num_workers=opt.n_cpu,
     )
 
     psnr_dataloader = DataLoader(
-        ImageDataset_XYZ_unpaired("../data/%s" % opt.dataset_name,  mode="test"),
+        ImageDataset_XYZ_unpaired("./data/%s" % opt.dataset_name,  mode="test"),
         batch_size=1,
         shuffle=False,
         num_workers=1,
     )
+
 
 def calculate_psnr():
     classifier.eval()
@@ -132,13 +133,13 @@ def calculate_psnr():
         real_A = Variable(batch["A_input"].type(Tensor))
         real_B = Variable(batch["A_exptC"].type(Tensor))
         fake_B, weights_norm = generator(real_A)
-        fake_B = torch.round(fake_B*255)
-        real_B = torch.round(real_B*255)
+        fake_B = torch.round(fake_B * 255)
+        real_B = torch.round(real_B * 255)
         mse = criterion_pixelwise(fake_B, real_B)
         psnr = 10 * math.log10(255.0 * 255.0 / mse.item())
         avg_psnr += psnr
 
-    return avg_psnr/ len(psnr_dataloader)
+    return avg_psnr / len(psnr_dataloader)
 
 
 def visualize_result(epoch):

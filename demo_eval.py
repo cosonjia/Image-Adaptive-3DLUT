@@ -86,7 +86,7 @@ img = img.unsqueeze(0)
 LUT = generate_LUT(img)
 
 # generate image
-result = trilinear_(LUT, img)
+_,result = trilinear_(LUT, img)
 
 # save image
 ndarr = result.squeeze().mul_(255).add_(0.5).clamp_(0, 255).permute(1, 2, 0).to('cpu', torch.uint8).numpy()
